@@ -1,7 +1,12 @@
 
 
+import sun.applet.Main;
+
+import javax.swing.*;
 import java.net.*;
 import java.io.*;
+
+import static java.lang.System.out;
 
 public class Server {
     public void run() {
@@ -11,9 +16,9 @@ public class Server {
              */
             int serverPort = 4021;
             ServerSocket serverSocket = new ServerSocket(serverPort);
-            serverSocket.setSoTimeout(10000);
+            //serverSocket.setSoTimeout(10000;
             while (true) {
-                System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
+                out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
                 /**
                  * После создания ServerSocket, сервер вызывает метод Accept() в ServerSocket
                  * для прослушивания входящих запросов на соединение от клиентов.
@@ -26,7 +31,7 @@ public class Server {
                  *Когда взаимодействие заканчивается, клиент, сервер, или оба, закрывают соединение, и сервер ожидает
                  *запроса на соединение от другого клиента.
                  */
-                System.out.println("Just connected to " + server.getRemoteSocketAddress());
+                out.println("Just connected to " + server.getRemoteSocketAddress());
 
                 PrintWriter toClient =
                         new PrintWriter(server.getOutputStream(), true);
@@ -34,14 +39,31 @@ public class Server {
                         new BufferedReader(
                                 new InputStreamReader(server.getInputStream()));
                 String line = fromClient.readLine();
-                System.out.println("Server received: " + line);
-                toClient.println("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
+                out.println("Server received: " + line);
+               // toClient.println(content);
+                String content = "";
+                StringBuilder contentBuilder = new StringBuilder();
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader(line));
+                    String str;
+                    while ((str = in.readLine()) != null) {
+                        contentBuilder.append(str);
+                    }
+                    in.close();
+                } catch (IOException e) {
+                }
+                content = contentBuilder.toString();
+                toClient.println(content);  // send to server
+
             }
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+
         }
+
+
     }
 
 
